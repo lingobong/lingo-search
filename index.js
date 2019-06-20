@@ -84,12 +84,14 @@ function LingoSearch(options = {}) {
         if ( !!searchOptions && searchOptions.constructor.name == 'Object' ) {
             if ( !searchOptions.limit ) searchOptions.limit = Math.max(0, searchOptions.limit);
             if ( !searchOptions.sort ) searchOptions.sort = { score: 'desc', unique_key: 'desc' };
+            if ( searchOptions.parse == null ) searchOptions.parse = true;
         }
         let datas = [];
         if (query.constructor.name == 'String') {
             datas.push({
                 text: query,
                 score: 1,
+                parse: searchOptions.parse,
             });
         }else if (query.constructor.name == 'Array') {
             datas = query;
