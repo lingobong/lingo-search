@@ -10,7 +10,7 @@ function LingoSearch(options = {}) {
     const LSOptions = {
         useWeight: false,
         languageRegExpString: null,
-        connection: defaultDB,
+        db: defaultDB,
         maxCellLength: 7,
     };
 
@@ -24,7 +24,7 @@ function LingoSearch(options = {}) {
 
         const {
             regexp = LSOptions.languageRegExpString,
-            connection = LSOptions.connection,
+            db = LSOptions.db,
             maxCellLength = LSOptions.maxCellLength,
             useWeight = LSOptions.useWeight,
         } = options;
@@ -55,7 +55,7 @@ function LingoSearch(options = {}) {
             this.options.languageRegExpString = regexps.join('');
         }
         
-        this.options.connection = connection;
+        this.options.db = db;
         this.options.maxCellLength = maxCellLength;
         this.options.useWeight = useWeight;
     };
@@ -72,7 +72,7 @@ function LingoSearch(options = {}) {
         if ( callback ) {
             await callback(textAndScores, payload);
         }else{
-            await this.options.connection.insert(textAndScores, payload);
+            await this.options.db.insert(textAndScores, payload);
         }
     };
     LS.prototype.search = async function ( query = '', searchOptions = { }, callback ) {
@@ -101,9 +101,9 @@ function LingoSearch(options = {}) {
 
         let textAndScores = utils.scoredByText(datas, this.options);
         if ( callback ) {
-            return await callback(textAndScores, searchOptions);
+            return await callback.apply(this, [textAndScores, searchOptions]);
         } else {
-            return await this.options.connection.search(textAndScores, searchOptions);
+            return await this.options.db.search(textAndScores, searchOptions);
         }
     };
     LS.prototype.remove = async function (unique_key, deleteOptions = {}, callback ) {
@@ -114,9 +114,9 @@ function LingoSearch(options = {}) {
             unique_keys.push(unique_key);
         }
         if ( callback ) {
-            return await callback(unique_keys, deleteOptions);
+            return await callback.apply(this, [unique_keys, deleteOptions]);
         } else {
-            return await this.options.connection.remove(unique_keys, deleteOptions);
+            return await this.options.db.remove(unique_keys, deleteOptions);
         }
     };
     return new LS(options);
