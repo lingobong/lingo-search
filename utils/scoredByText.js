@@ -45,7 +45,7 @@ function getMainAndSubTexts ( text, options ) {
     let main = null ;
     let sub = null ;
 
-    main = text.replace( new RegExp('[^'+options.languageRegExpString+']', 'g'), '' );
+    main = text.replace( new RegExp('[^'+options.languageRegExpString+']', 'g'), ' ' );
     sub = text.replace( new RegExp('['+options.languageRegExpString+']', 'g'), '' );
 
     return { main, sub };
