@@ -15,7 +15,10 @@ function parseText(text, parse = true, options){
                 let splited = textBySpace_runes.slice(i,j);
                 let splitedText = splited.join('');
                 if (splited.length <= options.maxCellLength && textBySpace != splitedText) {
-                    parsedList.push(splitedText);
+                    parsedList.push({
+                        type: 'part',
+                        word: splitedText,
+                    });
                 }
             }
         }
@@ -28,16 +31,24 @@ function parseText(text, parse = true, options){
             if (!!fullWord) {
                 let runesFullWord = runes(fullWord);
                 if (runesFullWord.length <= options.maxCellLength*2) {
-                    parsedList.push(fullWord);
+                    parsedList.push({
+                        type: 'full',
+                        word: fullWord,
+                    });
                 }
             }
         }
         lastAccessedWord = textBySpace;
     }
 
+    let subList = runes(mainAndSubTexts.sub);
+    subList = subList.map(s => ({
+        type: 'part',
+        word: s,
+    }));
     return {
         main: parsedList,
-        sub: runes(mainAndSubTexts.sub),
+        sub: subList,
     };
 };
 
@@ -74,8 +85,10 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
 
         let _textScoreObject = {};
         for (let wordList of [parsedText.main, parsedText.sub]) {
-            for (let word of wordList) {
+            for (let { type, word } of wordList) {
                 let score = Math.pow( runes(word).length/textLength, !!options.useWeight?2:1 ) * insertData.score;
+                if (type == 'full') score *= Math.PI;
+
                 if ( !!_textScoreObject[word] ) {
                     _textScoreObject[word] += score;
                 }else{
