@@ -30,7 +30,7 @@ function LingoSearch(options = {}) {
         } = options;
 
         let regexps = [];
-        if ( !options.regexp ) {
+        if ( !regexp ) {
             if (!this.options.languageRegExpString) {
                 regexps.push('а-яА-ЯЁё'); // russian
                 regexps.push('0-9'); // number
@@ -45,10 +45,10 @@ function LingoSearch(options = {}) {
                 regexps.push('\u00C0-\u00ff'); // portuguese
                 regexps.push(' '); // space
                 regexps.push('àâäèéêëîïôœùûüÿçÀÂÄÈÉÊËÎÏÔŒÙÛÜŸÇ'); // french
-            }else if (options.regexp.constructor.name == 'String') {
-                regexps.push(options.regexp);
-            }else if (options.regexp.constructor.name == 'Array') {
-                regexps = options.regexp;
+            }else if (regexp.constructor.name == 'String') {
+                regexps.push(regexp);
+            }else if (regexp.constructor.name == 'Array') {
+                regexps = regexp;
             }else{
                 return new Error('type error');
             }
@@ -111,7 +111,7 @@ function LingoSearch(options = {}) {
     LS.prototype.remove = async function (unique_key, deleteOptions = {}, callback ) {
         let unique_keys = [];
         if (unique_key.constructor.name == 'Array') {
-            unique_key = unique_key;
+            unique_keys = unique_key;
         }else{
             unique_keys.push(unique_key);
         }
