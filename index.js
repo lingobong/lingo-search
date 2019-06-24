@@ -9,6 +9,7 @@ function LingoSearch(options = {}) {
     const defaultDB = utils.LSDB();
     const LSOptions = {
         useWeight: false,
+        separateUpperLower: false,
         languageRegExpString: null,
         db: defaultDB,
         maxCellLength: 7,
@@ -27,6 +28,7 @@ function LingoSearch(options = {}) {
             db = LSOptions.db,
             maxCellLength = LSOptions.maxCellLength,
             useWeight = LSOptions.useWeight,
+            separateUpperLower = LSOptions.separateUpperLower,
         } = options;
 
         let regexps = [];
@@ -50,7 +52,7 @@ function LingoSearch(options = {}) {
             }else if (regexp.constructor.name == 'Array') {
                 regexps = regexp;
             }else{
-                return new Error('type error');
+                throw new Error('type error');
             }
             this.options.languageRegExpString = regexps.join('');
         }
@@ -58,6 +60,7 @@ function LingoSearch(options = {}) {
         this.options.db = db;
         this.options.maxCellLength = maxCellLength;
         this.options.useWeight = useWeight;
+        this.options.separateUpperLower = separateUpperLower;
     };
     LS.prototype.options = LSOptions;
     LS.prototype.config = function (options) {
@@ -65,7 +68,7 @@ function LingoSearch(options = {}) {
     };
     LS.prototype.insert = async function ( insertDatas = [], payload = {}, callback ) {
         if (payload.unique_key == null) {
-            return new Error('unique key can not empty');
+            throw new Error('unique key can not empty');
         }
 
         let textAndScores = utils.scoredByText(insertDatas, this.options);
@@ -98,7 +101,7 @@ function LingoSearch(options = {}) {
         }else if (query.constructor.name == 'Object') {
             datas.push( query );
         }else{
-            return new Error('type error');
+            throw new Error('type error');
         }
 
         let textAndScores = utils.scoredByText(datas, this.options);

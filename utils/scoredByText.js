@@ -75,7 +75,7 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
         };
         datas.push( _datas );
     }else{
-        return new Error('type error');
+        throw new Error('type error');
     }
 
     let textScoreObject = {};
