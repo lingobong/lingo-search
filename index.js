@@ -4,17 +4,19 @@
  * 
  */
 const utils = require('./utils');
-
-function LingoSearch(options = {}) {
+function getDefaultOption(){
     const defaultDB = utils.LSDB();
-    const LSOptions = {
+    return {
         useWeight: false,
         separateUpperLower: false,
+        includeUrl: true,
         languageRegExpString: null,
         db: defaultDB,
         maxCellLength: 7,
     };
-
+}
+function LingoSearch(options = {}) {
+    const LSOptions = getDefaultOption();
     const LS = function (options = {}) {
         /**
          * options = {
@@ -29,6 +31,7 @@ function LingoSearch(options = {}) {
             maxCellLength = LSOptions.maxCellLength,
             useWeight = LSOptions.useWeight,
             separateUpperLower = LSOptions.separateUpperLower,
+            includeUrl = LSOptions.includeUrl,
         } = options;
 
         let regexps = [];
@@ -61,6 +64,7 @@ function LingoSearch(options = {}) {
         this.options.maxCellLength = maxCellLength;
         this.options.useWeight = useWeight;
         this.options.separateUpperLower = separateUpperLower;
+        this.options.includeUrl = includeUrl;
     };
     LS.prototype.options = LSOptions;
     LS.prototype.config = function (options) {
@@ -74,6 +78,18 @@ function LingoSearch(options = {}) {
         let textAndScores = utils.scoredByText(insertDatas, this.options);
         if ( callback ) {
             await callback(textAndScores, payload);
+        }else{
+            await this.options.db.insert(textAndScores, payload);
+        }
+    };
+    LS.prototype.update = async function ( unique_key, updateDatas = [], payload = {}, callback ) {
+        if (unique_key == null) throw new Error('unique key can not empty');
+        if (!callback) throw new Error('Update is not ready. Use delete and insert.');
+        unique_key = unique_key + '';
+
+        let textAndScores = utils.scoredByText(updateDatas, this.options);
+        if ( callback ) {
+            await callback(unique_key, textAndScores, payload);
         }else{
             await this.options.db.insert(textAndScores, payload);
         }
@@ -126,4 +142,5 @@ function LingoSearch(options = {}) {
     };
     return new LS(options);
 }
+LingoSearch.options = getDefaultOption();
 module.exports = LingoSearch;

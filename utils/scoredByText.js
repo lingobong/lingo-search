@@ -77,6 +77,11 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
     }else{
         throw new Error('type error');
     }
+    for(let data of datas){
+        if (!options.includeUrl) {
+            data.text = data.text.replace(/([\w]*):\/\/([^ ^\n]{4,})/g,' ');
+        }
+    }
 
     let textScoreObject = {};
     for (let insertData of datas) {
@@ -89,10 +94,13 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
                 let score = Math.pow( runes(word).length/textLength, !!options.useWeight?2:1 ) * insertData.score;
                 if (type == 'full') score *= Math.PI;
 
-                if ( !!_textScoreObject[word] ) {
-                    _textScoreObject[word] += score;
-                }else{
-                    _textScoreObject[word] = score;
+                let word_lower = word.toLowerCase();
+                for (let wordByUpper of options.separateUpperLower ? [word, word_lower] : [word_lower, word_lower]) {
+                    if ( !!_textScoreObject[wordByUpper] ) {
+                        _textScoreObject[wordByUpper] += score/2;
+                    }else{
+                        _textScoreObject[wordByUpper] = score/2;
+                    }
                 }
             }
         }
