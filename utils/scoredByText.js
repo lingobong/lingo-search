@@ -85,20 +85,19 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
         if (!options.includeUrl) {
             data.text = data.text.replace(/([\w]*):\/\/([^ ^\n]{4,})/g,' ');
         }
-        if (!!data.type) {
-            data.type = data.type + '/';
-        }
+        data.type = !!data.type ? data.type + '/' : '';
     }
 
     let textScoreObject = {};
     for (let insertData of datas) {
+        let scoreSum = 0;
         let textLength = runes(insertData.text.replace(/ /g,'')).length;
         let parsedText = parseText( insertData, options );
 
         let _textScoreObject = {};
         for (let wordList of [parsedText.main, parsedText.sub]) {
             for (let { type, word } of wordList) {
-                let score = Math.pow( runes(word).length/textLength, !!options.useWeight?2:1 ) * insertData.score;
+                let score = Math.pow( runes(word.split('/').pop()).length/textLength, !!options.useWeight?2:1 ) * insertData.score;
                 if (type == 'full') score *= Math.PI;
 
                 let word_lower = word.toLowerCase();
@@ -108,14 +107,17 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
                     }else{
                         _textScoreObject[wordByUpper] = score/2;
                     }
+                    scoreSum += score/2;
                 }
             }
         }
+        
+
         for (let text in _textScoreObject) {
             if ( !!textScoreObject[text] ) {
-                textScoreObject[text] += _textScoreObject[text];
+                textScoreObject[text] += _textScoreObject[text]/scoreSum*insertData.score;
             } else {
-                textScoreObject[text] = _textScoreObject[text];
+                textScoreObject[text] = _textScoreObject[text]/scoreSum*insertData.score;
             }
         }
     }
