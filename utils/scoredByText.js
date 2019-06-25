@@ -78,6 +78,10 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
         throw new Error('type error');
     }
     for(let data of datas){
+        if (data.text.constructor.name == 'Array') {
+            data.text = data.text.join(' ');
+            data.parse = data.parse == null ? false : data.parse;
+        }
         if (!options.includeUrl) {
             data.text = data.text.replace(/([\w]*):\/\/([^ ^\n]{4,})/g,' ');
         }
