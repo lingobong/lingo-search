@@ -9,7 +9,7 @@ function getDefaultOption(){
     return {
         useWeight: false,
         separateUpperLower: false,
-        includeUrl: true,
+        includeUrl: false,
         languageRegExpString: null,
         db: defaultDB,
         maxCellLength: 7,
