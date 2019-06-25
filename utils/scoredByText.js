@@ -1,6 +1,6 @@
 const runes = require('runes');
 
-function parseText(text, parse = true, options){
+function parseText({ text, parse = true, type: wordType }, options){
     let mainAndSubTexts = getMainAndSubTexts( text, options );
     let textsBySpace = mainAndSubTexts.main.split(' ');
     let parsedList = [];
@@ -17,7 +17,7 @@ function parseText(text, parse = true, options){
                 if (splited.length <= options.maxCellLength && textBySpace != splitedText) {
                     parsedList.push({
                         type: 'part',
-                        word: splitedText,
+                        word: wordType + splitedText,
                     });
                 }
             }
@@ -33,7 +33,7 @@ function parseText(text, parse = true, options){
                 if (runesFullWord.length <= options.maxCellLength*2) {
                     parsedList.push({
                         type: 'full',
-                        word: fullWord,
+                        word: wordType + fullWord,
                     });
                 }
             }
@@ -85,12 +85,15 @@ module.exports = function scoredByText( _datas = {}, options = {} ){
         if (!options.includeUrl) {
             data.text = data.text.replace(/([\w]*):\/\/([^ ^\n]{4,})/g,' ');
         }
+        if (!!data.type) {
+            data.type = data.type + '/';
+        }
     }
 
     let textScoreObject = {};
     for (let insertData of datas) {
         let textLength = runes(insertData.text.replace(/ /g,'')).length;
-        let parsedText = parseText( insertData.text, insertData.parse, options );
+        let parsedText = parseText( insertData, options );
 
         let _textScoreObject = {};
         for (let wordList of [parsedText.main, parsedText.sub]) {
