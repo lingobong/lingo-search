@@ -13,6 +13,7 @@ function parseText({ text, parse = true, type: wordType }, options){
         for (let i = 0 ; i < textBySpace_length ; i ++) {
             for (let j = i+1 ; j <= textBySpace_length ; j ++) {
                 let splited = textBySpace_runes.slice(i,j);
+                if (textBySpace_length >= 2 && splited.length == 1) continue;
                 let splitedText = splited.join('');
                 if (splited.length <= options.maxCellLength && textBySpace != splitedText) {
                     parsedList.push({
