@@ -23,16 +23,18 @@ function parseText({ text, parse = true, type: wordType }, options){
             }
         }
         }
-        let fullWords = [textBySpace];
+        let fullWords = [{type:'full',word:textBySpace}];
         if (!!lastAccessedWord) {
-            fullWords.push(lastAccessedWord+textBySpace);
+            fullWords.push({type:'full2word',word:lastAccessedWord+textBySpace});
         }
-        for (let fullWord of fullWords) {
+        for (let fullWordItem of fullWords) {
+            let fullWord = fullWordItem.word;
+            let fullWordType = fullWordItem.type;
             if (!!fullWord) {
                 let runesFullWord = runes(fullWord);
                 if (runesFullWord.length <= options.maxCellLength*2) {
                     parsedList.push({
-                        type: 'full',
+                        type: fullWordType,
                         word: wordType + fullWord,
                     });
                 }
